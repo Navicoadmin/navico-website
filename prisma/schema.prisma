@@ -1,0 +1,171 @@
+// Prisma schema cho website NAVICO
+// DB: PostgreSQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Tài khoản quản trị (admin)
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         Role     @default(EDITOR)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+}
+
+// Danh mục sản phẩm (Men vi sinh, Dinh dưỡng, Khoáng, Xử lý nước...)
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  icon        String? // tên icon Material Symbols
+  order       Int       @default(0)
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+// Sản phẩm
+model Product {
+  id                 String       @id @default(cuid())
+  name               String
+  slug               String       @unique
+  code               String       @unique // SKU
+  categoryId         String
+  category           Category     @relation(fields: [categoryId], references: [id])
+  shortDescription   String
+  activeIngredients  String? // thành phần hoạt chất
+  benefits           String? // công dụng
+  usageInstructions  String? // hướng dẫn sử dụng
+  dosage             String? // liều dùng
+  heroImage          String?
+  gallery            String[] // mảng URL ảnh
+  subBrandLogo       String?
+  metaTitle          String?
+  metaDescription    String?
+  featured           Boolean      @default(false)
+  published          Boolean      @default(true)
+  faqs               ProductFaq[]
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  @@index([categoryId])
+  @@index([published])
+}
+
+// Câu hỏi thường gặp của từng sản phẩm
+model ProductFaq {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  question  String
+  answer    String
+  order     Int     @default(0)
+}
+
+// Tin tức / bài viết kỹ thuật
+model News {
+  id              String    @id @default(cuid())
+  title           String
+  slug            String    @unique
+  excerpt         String
+  content         String // HTML/markdown
+  coverImage      String?
+  tag             String? // Technical Guide, Case Study, White Paper...
+  author          String    @default("Navico")
+  views           Int       @default(0)
+  published       Boolean   @default(true)
+  publishedAt     DateTime  @default(now())
+  metaTitle       String?
+  metaDescription String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([published])
+}
+
+// Tin nhắn liên hệ từ form
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  message   String
+  handled   Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+// Logo thương hiệu/đối tác đồng hành (hiển thị ở trang Giới thiệu)
+model Partner {
+  id        String   @id @default(cuid())
+  name      String
+  logo      String // URL ảnh logo
+  url       String? // link website đối tác (tùy chọn)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([order])
+}
+
+// Slide ảnh đầu trang chủ (hero) - admin tùy chỉnh
+model HeroSlide {
+  id        String   @id @default(cuid())
+  image     String
+  title     String
+  subtitle  String?
+  ctaLabel  String? // chữ trên nút
+  ctaHref   String? // link nút (mặc định /san-pham)
+  order     Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([active, order])
+}
+
+// Vị trí tuyển dụng
+model Job {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  department  String?
+  type        String? // Toàn thời gian / Bán thời gian...
+  location    String?
+  description String? // mô tả chi tiết (HTML/text)
+  published   Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([published])
+}
+
+// Hoạt động / sự kiện công ty
+model Activity {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  tag         String? // Triển lãm / Hội thảo / Nội bộ...
+  description String
+  date        DateTime @default(now())
+  images      String[] // mảng URL ảnh
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([published])
+}
