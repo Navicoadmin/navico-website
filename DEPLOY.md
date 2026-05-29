@@ -69,11 +69,10 @@ postgresql://navico:doi_mat_khau_manh_o_day@localhost:5432/navico?schema=public
 ```bash
 # Tạo thư mục deploy
 sudo mkdir -p /var/www/navico && sudo chown $USER:$USER /var/www/navico
-cd /var/www/navico
 
-# Đưa mã nguồn lên (git clone hoặc scp). Mã nguồn nằm trong thư mục web/
-git clone <REPO_URL> .
-cd web
+# Clone mã nguồn (repo gốc chính là app, không có thư mục con)
+git clone https://github.com/Navicoadmin/navico-website.git /var/www/navico
+cd /var/www/navico
 ```
 
 Tạo file `.env` (dựa trên `.env.example`):
@@ -201,8 +200,8 @@ sudo certbot renew --dry-run
 - **KHÔNG** xóa thư mục này (chứa file người dùng đã tải).
 - Đảm bảo quyền ghi cho user chạy app:
   ```bash
-  mkdir -p /var/www/navico/web/public/uploads
-  chmod 775 /var/www/navico/web/public/uploads
+  mkdir -p /var/www/navico/public/uploads
+  chmod 775 /var/www/navico/public/uploads
   ```
 - Nên sao lưu định kỳ cùng với database (giai đoạn 2 sẽ có hướng dẫn backup).
 
@@ -211,7 +210,7 @@ sudo certbot renew --dry-run
 ## 10. Cập nhật phiên bản mới
 
 ```bash
-cd /var/www/navico/web
+cd /var/www/navico
 git pull
 npm ci
 npx prisma migrate deploy   # nếu có thay đổi schema
