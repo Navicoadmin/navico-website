@@ -33,12 +33,3 @@ RUN adduser --system --uid 1001 nextjs
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
-COPY --from=builder /app/prisma ./prisma
-
-USER nextjs
-
-EXPOSE 8080
-
-CMD ["sh", "-c", "npx prisma db push --accept-data-loss 2>&1 && node server.js"]
