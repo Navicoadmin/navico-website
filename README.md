@@ -25,3 +25,8 @@ Xem hướng dẫn chi tiết trong [DEPLOY.md](./DEPLOY.md) (VPS Linux: Node 20
 
 ## Biến môi trường
 Xem [.env.example](./.env.example). Lưu ý: KHÔNG commit file `.env` thật.
+
+
+## Production
+
+Deployed on Google Cloud Run at https://navico.vn
