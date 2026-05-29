@@ -1,36 +1,27 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NAVICO — Website thủy sản & công nghệ sinh học
 
-## Getting Started
+Website chính thức của NAVICO: giới thiệu công ty, sản phẩm (men vi sinh, dinh dưỡng, khoáng, xử lý nước...), tin tức kỹ thuật, tuyển dụng, hoạt động, liên hệ — kèm trang quản trị `/admin` và chatbot AI tư vấn.
 
-First, run the development server:
+## Công nghệ
+- **Next.js 15** (App Router) + **TypeScript** + **Tailwind CSS v3**
+- **PostgreSQL** + **Prisma ORM**
+- Auth JWT (jose) + bcrypt, upload ảnh/PDF, rate limit, validate zod
+- Chatbot AI qua OpenAI (tùy chọn, cấu hình bằng `OPENAI_API_KEY`)
+- Font Be Vietnam Pro, SEO (sitemap/robots/metadata/OG)
 
+## Chạy ở môi trường dev
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm ci
+cp .env.example .env          # điền DATABASE_URL, JWT_SECRET, ...
+npx prisma migrate dev        # tạo bảng
+npm run db:seed               # tạo admin + dữ liệu mẫu
+npm run dev                   # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Tài khoản admin mặc định (sau seed): `admin@navico.vn` / `Navico@123` — **đổi mật khẩu khi lên production**.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Triển khai production
+Xem hướng dẫn chi tiết trong [DEPLOY.md](./DEPLOY.md) (VPS Linux: Node 20 + PostgreSQL + PM2 + Nginx + SSL).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Biến môi trường
+Xem [.env.example](./.env.example). Lưu ý: KHÔNG commit file `.env` thật.
