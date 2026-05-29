@@ -41,4 +41,4 @@ USER nextjs
 
 EXPOSE 8080
 
-CMD ["sh", "-c", "npx prisma migrate deploy & node server.js"]
+CMD ["sh", "-c", "npx prisma db push --accept-data-loss 2>&1 && node server.js"]
