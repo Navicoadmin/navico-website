@@ -3,7 +3,7 @@ steps:
     entrypoint: sh
     args:
       - '-c'
-      - 'apk add --no-cache openssl && npm ci && DATABASE_URL=$_DATABASE_URL npx prisma db push --accept-data-loss --skip-generate'
+      - 'apk add --no-cache openssl && npm ci && DATABASE_URL=$_DATABASE_URL npx prisma db push --accept-data-loss --skip-generate && DATABASE_URL=$_DATABASE_URL npx prisma db seed || true'
     id: MigrateDB
   - name: gcr.io/cloud-builders/docker
     args:
