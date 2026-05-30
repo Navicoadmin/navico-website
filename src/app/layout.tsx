@@ -39,7 +39,7 @@ export const metadata: Metadata = {
       "Giải pháp dinh dưỡng, men vi sinh và công nghệ sinh học cho ngành nuôi trồng thủy sản.",
     images: [
       {
-        url: `${siteUrl}/og-image.png`,
+        url: `${siteUrl}/opengraph-image`,
         width: 1200,
         height: 630,
         alt: "NAVICO - Giải pháp Thủy sản & Công nghệ Sinh học",
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     title: "NAVICO | Giải pháp Thủy sản & Công nghệ Sinh học",
     description:
       "Giải pháp dinh dưỡng, men vi sinh và công nghệ sinh học cho ngành nuôi trồng thủy sản.",
-    images: [`${siteUrl}/og-image.png`],
+    images: [`${siteUrl}/opengraph-image`],
   },
 };
 
