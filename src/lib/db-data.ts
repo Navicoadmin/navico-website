@@ -23,7 +23,7 @@ export async function getProductsFromDB(opts?: {
 }): Promise<Product[]> {
   const where: Prisma.ProductWhereInput = { published: true };
   if (opts?.categorySlug) {
-    where.category = { slug: opts.categorySlug };
+    where.categorySlug = opts.categorySlug;
   }
   if (opts?.query) {
     where.OR = [
