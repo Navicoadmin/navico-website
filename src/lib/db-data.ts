@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import type { Category, Product } from "@/lib/data";
+import type { Category, Product, News } from "@/lib/data";
 
 // ====== Async Prisma-based data accessors (replaces hardcoded data.ts) ======
 
@@ -125,4 +125,74 @@ export async function getRelatedProductsFromDB(
           featured: p.featured ?? false,
           faqs: p.faqs?.map((f) => ({ question: f.question, answer: f.answer })) ?? [],
     }));
+}
+
+// ====== News functions ======
+
+export async function getNewsListFromDB(opts?: {
+  tag?: string;
+  query?: string;
+  limit?: number;
+}): Promise<News[]> {
+  const where: Record<string, unknown> = { published: true };
+  if (opts?.tag) {
+    where.tag = opts.tag;
+  }
+  if (opts?.query) {
+    where.OR = [
+      { title: { contains: opts.query, mode: "insensitive" } },
+      { excerpt: { contains: opts.query, mode: "insensitive" } },
+    ];
+  }
+  const rows = await prisma.news.findMany({
+    where,
+    orderBy: { publishedAt: "desc" },
+    take: opts?.limit,
+  });
+  return rows.map((n) => ({
+    title: n.title,
+    slug: n.slug,
+    excerpt: n.excerpt,
+    content: n.content,
+    coverImage: n.coverImage ?? undefined,
+    tag: n.tag ?? undefined,
+    author: n.author,
+    views: n.views,
+    publishedAt: n.publishedAt.toISOString(),
+  }));
+}
+
+export async function getTrendingNewsFromDB(limit = 3): Promise<News[]> {
+  const rows = await prisma.news.findMany({
+    where: { published: true },
+    orderBy: { views: "desc" },
+    take: limit,
+  });
+  return rows.map((n) => ({
+    title: n.title,
+    slug: n.slug,
+    excerpt: n.excerpt,
+    content: n.content,
+    coverImage: n.coverImage ?? undefined,
+    tag: n.tag ?? undefined,
+    author: n.author,
+    views: n.views,
+    publishedAt: n.publishedAt.toISOString(),
+  }));
+}
+
+export async function getNewsBySlugFromDB(slug: string): Promise<News | undefined> {
+  const n = await prisma.news.findUnique({ where: { slug } });
+  if (!n) return undefined;
+  return {
+    title: n.title,
+    slug: n.slug,
+    excerpt: n.excerpt,
+    content: n.content,
+    coverImage: n.coverImage ?? undefined,
+    tag: n.tag ?? undefined,
+    author: n.author,
+    views: n.views,
+    publishedAt: n.publishedAt.toISOString(),
+  };
 }
