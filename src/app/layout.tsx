@@ -32,10 +32,27 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "vi_VN",
+    url: siteUrl,
     siteName: "NAVICO",
     title: "NAVICO | Giải pháp Thủy sản & Công nghệ Sinh học",
     description:
       "Giải pháp dinh dưỡng, men vi sinh và công nghệ sinh học cho ngành nuôi trồng thủy sản.",
+    images: [
+      {
+        url: `${siteUrl}/og-image.png`,
+        width: 1200,
+        height: 630,
+        alt: "NAVICO - Giải pháp Thủy sản & Công nghệ Sinh học",
+        type: "image/png",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "NAVICO | Giải pháp Thủy sản & Công nghệ Sinh học",
+    description:
+      "Giải pháp dinh dưỡng, men vi sinh và công nghệ sinh học cho ngành nuôi trồng thủy sản.",
+    images: [`${siteUrl}/og-image.png`],
   },
 };
 
