@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { ProductCard } from "@/components/ProductCard";
 import { Icon } from "@/components/Icon";
-import { getCategories, getProducts } from "@/lib/data";
+import { getCategoriesFromDB, getProductsFromDB } from "@/lib/db-data";
 
 export const metadata: Metadata = {
   title: "Sản phẩm",
@@ -18,8 +18,8 @@ export default async function ProductsPage({
   searchParams: Promise<{ category?: string; q?: string }>;
 }) {
   const { category, q } = await searchParams;
-  const categories = getCategories();
-  const products = getProducts({ categorySlug: category, query: q });
+    const categories = await getCategoriesFromDB();
+    const products = await getProductsFromDB({ categorySlug: category, query: q });
 
   const buildHref = (slug?: string) => {
     const params = new URLSearchParams();
