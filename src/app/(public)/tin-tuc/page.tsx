@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { NewsCard, formatDate } from "@/components/NewsCard";
 import { Icon } from "@/components/Icon";
-import { getNewsList, getTrendingNews } from "@/lib/data";
+import { getNewsListFromDB, getTrendingNewsFromDB } from "@/lib/db-data";
 
 export const metadata: Metadata = {
   title: "Tin tức & Sự kiện",
@@ -11,10 +11,10 @@ export const metadata: Metadata = {
     "Cập nhật tin tức ngành thủy sản, kỹ thuật nuôi, dinh dưỡng, vi sinh và công nghệ mới nhất từ chuyên gia Navico.",
 };
 
-export default function NewsPage() {
-  const list = getNewsList();
+export default async function NewsPage() {
+  const list = await getNewsListFromDB();
   const [featured, ...rest] = list;
-  const trending = getTrendingNews(3);
+  const trending = await getTrendingNewsFromDB(3);
 
   return (
     <div className="max-w-container-max mx-auto px-margin-mobile lg:px-margin-desktop py-10">
