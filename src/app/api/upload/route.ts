@@ -1,5 +1,4 @@
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
+import { Storage } from "@google-cloud/storage";
 import { randomBytes } from "crypto";
 import { badRequest, created, requireAuth, serverError } from "@/lib/api";
 
@@ -13,7 +12,9 @@ const ALLOWED: Record<string, string> = {
   "application/pdf": ".pdf",
 };
 
-// POST /api/upload — tải lên 1 file (ảnh hoặc PDF). Chỉ admin.
+const BUCKET_NAME = process.env.GCS_BUCKET_NAME || "navico-uploads";
+
+// POST /api/upload – tải lên 1 file (ảnh hoặc PDF). Chỉ admin.
 export async function POST(req: Request) {
   const auth = await requireAuth();
   if ("error" in auth) return auth.error;
@@ -25,10 +26,12 @@ export async function POST(req: Request) {
     if (!(file instanceof File)) {
       return badRequest("Không tìm thấy file");
     }
+
     if (file.size === 0) return badRequest("File rỗng");
     if (file.size > MAX_SIZE) {
       return badRequest("File vượt quá 8MB");
     }
+
     const ext = ALLOWED[file.type];
     if (!ext) {
       return badRequest("Chỉ chấp nhận ảnh (JPG/PNG/WEBP/GIF) hoặc PDF");
@@ -36,13 +39,23 @@ export async function POST(req: Request) {
 
     // Tên file ngẫu nhiên để tránh trùng và chống đoán đường dẫn
     const filename = `${Date.now()}-${randomBytes(8).toString("hex")}${ext}`;
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
-    await mkdir(uploadDir, { recursive: true });
 
     const buffer = Buffer.from(await file.arrayBuffer());
-    await writeFile(path.join(uploadDir, filename), buffer);
 
-    const url = `/uploads/${filename}`;
+    // Upload lên Google Cloud Storage
+    const storage = new Storage();
+    const bucket = storage.bucket(BUCKET_NAME);
+    const gcsFile = bucket.file(`uploads/${filename}`);
+
+    await gcsFile.save(buffer, {
+      metadata: {
+        contentType: file.type,
+        cacheControl: "public, max-age=31536000",
+      },
+    });
+
+    // URL serve qua API proxy của chính website (không cần public bucket)
+    const url = `/api/files/${filename}`;
     return created({ url, type: file.type, size: file.size });
   } catch (err) {
     console.error("upload error", err);
