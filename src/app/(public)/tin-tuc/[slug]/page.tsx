@@ -7,7 +7,8 @@ import { Icon } from "@/components/Icon";
 import { getNewsBySlugFromDB, getNewsListFromDB } from "@/lib/db-data";
 
 export async function generateStaticParams() {
-  return await getNewsListFromDB().map((n) => ({ slug: n.slug }));
+  const items = await getNewsListFromDB();
+  return items.map((n) => ({ slug: n.slug }));
 }
 
 export async function generateMetadata({
