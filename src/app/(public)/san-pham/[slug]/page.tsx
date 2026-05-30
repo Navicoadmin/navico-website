@@ -5,14 +5,15 @@ import { Breadcrumb } from "@/components/Breadcrumb";
 import { ProductCard } from "@/components/ProductCard";
 import { Icon } from "@/components/Icon";
 import {
-  getProductBySlug,
-  getProducts,
-  getRelatedProducts,
-} from "@/lib/data";
+  getProductBySlugFromDB,
+  getProductsFromDB,
+  getRelatedProductsFromDB,
+} from "@/lib/db-data";
 
 // Tạo sẵn các trang sản phẩm ở build time (SSG)
-export function generateStaticParams() {
-  return getProducts().map((p) => ({ slug: p.slug }));
+export async function generateStaticParams() {
+  const products = await getProductsFromDB();
+  return products.map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({
@@ -21,7 +22,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await getProductBySlugFromDB(slug);
   if (!product) return { title: "Không tìm thấy sản phẩm" };
   return {
     title: product.name,
@@ -40,10 +41,10 @@ export default async function ProductDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await getProductBySlugFromDB(slug);
   if (!product) notFound();
 
-  const related = getRelatedProducts(product);
+  const related = await getRelatedProductsFromDB(product, 3);
   const hasIngredients = product.activeIngredients.length > 0;
   const hasBenefits = product.benefits.length > 0;
   const hasDosage = product.dosage.length > 0;
